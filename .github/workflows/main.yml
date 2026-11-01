@@ -1,0 +1,26 @@
+name: Build iPadOS Mod
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build iOS Target
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Geode CLI
+        uses: geode-sdk/cli/.github/actions/setup@main
+
+      - name: Build Mod
+        run: |
+          geode build --platform ios
+
+      - name: Upload Artifact
+        uses: actions/actions-runner/upload-artifact@v4
+        with:
+          name: multiplayer-edit-ipados
+          path: build/*.geode
