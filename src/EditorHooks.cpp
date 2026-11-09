@@ -387,7 +387,7 @@ namespace {
             }
 
             std::error_code ec;
-            std::filesystem::remove(tempPath, ec);
+            std::filesystem::remove(tempPath.string(), ec);
         }
 
         constexpr size_t MAX_CHUNK_BYTES = 10000;
@@ -1336,7 +1336,7 @@ class $modify(MPEditorUI, EditorUI) {
         return EditorUI::createCustomItems();
     }
 
-    cocos2d::CCSprite* spriteFromObjectString(gd::string str, bool absoluteCenter, bool useGroup, int objLimit, cocos2d::CCArray* objects, cocos2d::CCArray* group, GameObject* groupParent) {
+    cocos2d::CCSprite* spriteFromObjectString(std::string str, bool absoluteCenter, bool useGroup, int objLimit, cocos2d::CCArray* objects, cocos2d::CCArray* group, GameObject* groupParent) {
         PreviewScope scope;
         return EditorUI::spriteFromObjectString(str, absoluteCenter, useGroup, objLimit, objects, group, groupParent);
     }
@@ -1361,10 +1361,11 @@ class $modify(MPEditorUI, EditorUI) {
         EditorUI::redoLastAction(sender);
     }
 
-    void onCreateObject(int id) {
-        if (SessionManager::get().isLocalPlayerViewOnly()) return;
-        EditorUI::onCreateObject(id);
+    GameObject* onCreateObject(int id) {
+        if (SessionManager::get().isLocalPlayerViewOnly()) return nullptr;
+        auto* obj = EditorUI::onCreateObject(id);
         s_selectedObjectID = id;
+        return obj;
     }
 
     void toggleMode(cocos2d::CCObject* btn) {
@@ -1930,10 +1931,10 @@ class $modify(MPEditorUI, EditorUI) {
         });
     }
 
-    void rotateObjects(cocos2d::CCArray* objects, float rotation, cocos2d::CCPoint pivotPoint) {
+    void rotateObjects(cocos2d::CCArray* objects, float rotation, cocos2d::CCPoint pivotPoint, bool lock) {
         if (SessionManager::get().isLocalPlayerViewOnly()) return;
         syncTransformedObjects(objects, [&]() {
-            EditorUI::rotateObjects(objects, rotation, pivotPoint);
+            EditorUI::rotateObjects(objects, rotation, pivotPoint, lock);
         });
     }
 
