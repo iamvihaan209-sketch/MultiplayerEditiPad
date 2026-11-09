@@ -1,3 +1,6 @@
+# 0.8.0
+- Updated for Geometry Dash 2.2091 and Geode 6.0.0-alpha.1.
+
 # 0.7.3
 - Fixed crash when playtesting after an object is placed by another player.
 
