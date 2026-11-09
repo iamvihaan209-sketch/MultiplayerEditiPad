@@ -17,9 +17,11 @@ jobs:
           - name: Windows
             os: windows-latest
             platform: windows
+            cli-profile: win
           - name: macOS
             os: macos-latest
             platform: mac
+            cli-profile: mac-arm
 
     steps:
       - name: Checkout Repository
@@ -39,9 +41,25 @@ jobs:
       - name: Set up Geode CLI
         uses: geode-sdk/cli/.github/actions/setup@main
 
-      - name: Install Geode loader binaries
-        run: geode sdk install-binaries
+      - name: Create CLI profile (Windows)
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:LOCALAPPDATA "Geode"
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          $json = '{"current-profile":"ci","profiles":[{"name":"ci","gd-path":"ci-placeholder","platform":"${{ matrix.cli-profile }}"}],"sdk-nightly":false}'
+          [IO.File]::WriteAllText((Join-Path $dir "config.json"), $json)
+
+      - name: Create CLI profile (macOS)
+        if: matrix.platform == 'mac'
         shell: bash
+        run: |
+          sudo mkdir -p /Users/Shared/Geode
+          echo '{"current-profile":"ci","profiles":[{"name":"ci","gd-path":"ci-placeholder","platform":"${{ matrix.cli-profile }}"}],"sdk-nightly":false}' | sudo tee /Users/Shared/Geode/config.json > /dev/null
+
+      - name: Install Geode loader binaries
+        shell: bash
+        run: geode sdk install-binaries --version 6.0.0-alpha.1
 
       - name: Build Mod
         run: geode build --platform ${{ matrix.platform }}
