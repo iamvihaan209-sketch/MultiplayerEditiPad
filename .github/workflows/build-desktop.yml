@@ -38,6 +38,11 @@ jobs:
         run: echo "GEODE_SDK=${{ github.workspace }}/geode-sdk" >> "$GITHUB_ENV"
         shell: bash
 
+      - name: Use clang-cl toolset (Windows)
+        if: matrix.platform == 'windows'
+        shell: bash
+        run: echo "CMAKE_GENERATOR_TOOLSET=ClangCL" >> "$GITHUB_ENV"
+
       - name: Set up Geode CLI
         uses: geode-sdk/cli/.github/actions/setup@main
         with:
