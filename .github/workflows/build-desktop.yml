@@ -76,7 +76,9 @@ jobs:
       - name: Build Geode loader from source
         shell: bash
         run: |
-          cmake -S geode-sdk -B geode-sdk/build-loader -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          TOOLSET=""
+          if [ "$RUNNER_OS" = "Windows" ]; then TOOLSET="-T ClangCL"; fi
+          cmake -S geode-sdk -B geode-sdk/build-loader $TOOLSET -DCMAKE_BUILD_TYPE=RelWithDebInfo
           cmake --build geode-sdk/build-loader --config RelWithDebInfo --target geode-loader --parallel
 
       - name: Build Mod
