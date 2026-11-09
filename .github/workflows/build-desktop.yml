@@ -47,15 +47,23 @@ jobs:
         run: |
           $dir = Join-Path $env:LOCALAPPDATA "Geode"
           New-Item -ItemType Directory -Force -Path $dir | Out-Null
-          $json = '{"current-profile":"ci","profiles":[{"name":"ci","gd-path":"ci-placeholder","platform":"${{ matrix.cli-profile }}"}],"sdk-nightly":false}'
+          $gd = Join-Path $env:RUNNER_TEMP "gd"
+          New-Item -ItemType Directory -Force -Path (Join-Path $gd "geode/mods") | Out-Null
+          $json = @{
+            "current-profile" = "ci"
+            "profiles" = @(@{ name = "ci"; "gd-path" = $gd; platform = "${{ matrix.cli-profile }}" })
+            "sdk-nightly" = $false
+          } | ConvertTo-Json -Depth 5
           [IO.File]::WriteAllText((Join-Path $dir "config.json"), $json)
 
       - name: Create CLI profile (macOS)
         if: matrix.platform == 'mac'
         shell: bash
         run: |
+          GD="$RUNNER_TEMP/gd"
+          mkdir -p "$GD/geode/mods"
           sudo mkdir -p /Users/Shared/Geode
-          echo '{"current-profile":"ci","profiles":[{"name":"ci","gd-path":"ci-placeholder","platform":"${{ matrix.cli-profile }}"}],"sdk-nightly":false}' | sudo tee /Users/Shared/Geode/config.json > /dev/null
+          echo "{\"current-profile\":\"ci\",\"profiles\":[{\"name\":\"ci\",\"gd-path\":\"$GD\",\"platform\":\"${{ matrix.cli-profile }}\"}],\"sdk-nightly\":false}" | sudo tee /Users/Shared/Geode/config.json > /dev/null
           sudo chown -R "$(id -un)" /Users/Shared/Geode
 
       - name: Install Geode loader binaries
