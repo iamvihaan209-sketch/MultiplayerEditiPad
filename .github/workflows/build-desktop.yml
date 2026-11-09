@@ -39,6 +39,10 @@ jobs:
       - name: Set up Geode CLI
         uses: geode-sdk/cli/.github/actions/setup@main
 
+      - name: Install Geode loader binaries
+        run: geode sdk install-binaries
+        shell: bash
+
       - name: Build Mod
         run: geode build --platform ${{ matrix.platform }}
 
