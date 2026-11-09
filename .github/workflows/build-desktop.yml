@@ -1,0 +1,38 @@
+name: Build Windows and macOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [port-gd-2.2091]
+  pull_request:
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            platform: windows
+          - name: macOS
+            os: macos-latest
+            platform: mac
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Geode CLI
+        uses: geode-sdk/cli/.github/actions/setup@main
+
+      - name: Build Mod
+        run: geode build --platform ${{ matrix.platform }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: multiplayer-edit-${{ matrix.platform }}
+          path: build/*.geode
