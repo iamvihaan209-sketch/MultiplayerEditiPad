@@ -41,7 +41,7 @@ jobs:
       - name: Set up Geode CLI
         uses: geode-sdk/cli/.github/actions/setup@main
         with:
-          version: '4.0.0'
+          version: 'v4.0.0'
 
       - name: Create CLI profile (Windows)
         if: matrix.platform == 'windows'
