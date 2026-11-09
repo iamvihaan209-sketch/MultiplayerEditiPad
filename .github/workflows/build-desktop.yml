@@ -68,9 +68,11 @@ jobs:
           echo "{\"current-profile\":\"ci\",\"profiles\":[{\"name\":\"ci\",\"gd-path\":\"$GD\",\"platform\":\"${{ matrix.cli-profile }}\"}],\"sdk-nightly\":false}" | sudo tee /Users/Shared/Geode/config.json > /dev/null
           sudo chown -R "$(id -un)" /Users/Shared/Geode
 
-      - name: Install Geode loader binaries
+      - name: Build Geode loader from source
         shell: bash
-        run: geode sdk install-binaries --version 6.0.0-alpha.1
+        run: |
+          cmake -S geode-sdk -B geode-sdk/build-loader -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          cmake --build geode-sdk/build-loader --config RelWithDebInfo --target geode-loader --parallel
 
       - name: Build Mod
         run: geode build --platform ${{ matrix.platform }}
