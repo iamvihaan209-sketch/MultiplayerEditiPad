@@ -25,6 +25,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Checkout Geode SDK (v6)
+        uses: actions/checkout@v4
+        with:
+          repository: geode-sdk/geode
+          ref: v6
+          path: geode-sdk
+
+      - name: Set GEODE_SDK
+        run: echo "GEODE_SDK=${{ github.workspace }}/geode-sdk" >> "$GITHUB_ENV"
+        shell: bash
+
       - name: Set up Geode CLI
         uses: geode-sdk/cli/.github/actions/setup@main
 
